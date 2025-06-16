@@ -11,11 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Aqui você registra o middleware com alias
+        $middleware->alias([
+            'check.permissao' => \App\Http\Middleware\CheckPermission::class,
+            'logs.only'       => \App\Http\Middleware\RestrictLogsAccess::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();
-    $app->withMiddleware([
-        App\Http\Middleware\RestrictLogsAccess::class,
-    ]);

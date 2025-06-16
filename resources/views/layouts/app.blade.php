@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Controle de Cartões</title>
+    <title>Portal de Controle</title>
 
     <!-- AdminLTE CSS -->
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <style>
-        /* Cor do menu lateral (cinza médio) */
         .main-sidebar {
-            background-color: #dee2e6 !important; /* Cinza médio mais escuro */
+            background-color: #dee2e6 !important;
         }
 
-        /* Ajuste da navbar */
         .navbar-light {
             background-color: #ffffff !important;
             border-bottom: 1px solid #ddd;
         }
 
-        /* Nome do usuário na navbar (canto direito) */
         .user-info {
             font-weight: bold;
             margin-right: 10px;
             color: #343a40;
         }
 
-        /* Botão de logout menor e elegante */
         .btn-logout {
             background: #dc3545;
             color: white;
@@ -43,9 +39,8 @@
             background: #c82333;
         }
 
-        /* Ícones do menu lateral vermelhos */
         .nav-sidebar .nav-icon {
-            color: #dc3545 !important; /* Vermelho */
+            color: #dc3545 !important;
         }
     </style>
 </head>
@@ -55,7 +50,7 @@
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-light">
         <div class="container-fluid d-flex justify-content-between">
-            <div></div> <!-- Espaço vazio para alinhar -->
+            <div></div>
             <div class="d-flex align-items-center">
                 @auth
                     <span class="user-info">
@@ -71,41 +66,64 @@
 
     <!-- Menu Lateral -->
     @auth
-    @php
-        // Definir os usuários que podem visualizar os logs (apenas a parte antes do @)
-        $usuariosPermitidos = [
-            'raissa.adm',
-            'ricardo.adm',
-            'jose.adm'
-        ];
-
-        // Obtém apenas o nome de usuário antes do "@"
-        $username = explode('@', auth()->user()->email)[0];
-    @endphp
-
     <aside class="main-sidebar sidebar-light-primary elevation-4">
         <a href="#" class="brand-link text-center">
-            <span class="brand-text font-weight-bold text-dark">Controle de Cartões</span>
+            <span class="brand-text font-weight-bold text-dark">Portal de Controle</span>
         </a>
         <div class="sidebar">
             <nav class="mt-2">
                 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
+
+                    <!-- Meus Cartões -->
+                    @if(usuarioEhAdmin() || usuarioTemPermissao('cartoes'))
                     <li class="nav-item">
                         <a href="{{ route('cartaos.index') }}" class="nav-link">
                             <i class="nav-icon bi bi-credit-card"></i>
                             <p>Meus Cartões</p>
                         </a>
                     </li>
-
-                    <!-- Apenas os usuários permitidos podem ver os logs -->
-                    @if(in_array($username, $usuariosPermitidos))
-                        <li class="nav-item">
-                            <a href="{{ route('logs.index') }}" class="nav-link">
-                                <i class="nav-icon bi bi-list-check"></i>
-                                <p>Logs</p>
-                            </a>
-                        </li>
                     @endif
+
+                    <!-- Ofícios -->
+                    @if(usuarioEhAdmin() || usuarioTemPermissao('oficios'))
+                    <li class="nav-item">
+                        <a href="{{ route('oficios.index') }}" class="nav-link">
+                            <i class="nav-icon bi bi-journal-text"></i>
+                            <p>Ofícios</p>
+                        </a>
+                    </li>
+                    @endif
+
+                    <!-- Dashboard -->
+                    @if(usuarioEhAdmin())
+                    <li class="nav-item">
+                        <a href="{{ route('dashboard') }}" class="nav-link">
+                            <i class="nav-icon bi bi-bar-chart-line"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+                    @endif
+
+                    <!-- Logs -->
+                    @if(usuarioEhAdmin())
+                    <li class="nav-item">
+                        <a href="{{ route('logs.index') }}" class="nav-link">
+                            <i class="nav-icon bi bi-list-check"></i>
+                            <p>Logs</p>
+                        </a>
+                    </li>
+                    @endif
+
+                    <!-- Permissões -->
+                    @if(usuarioEhAdmin())
+                    <li class="nav-item">
+                        <a href="{{ route('permissoes.index') }}" class="nav-link">
+                            <i class="nav-icon bi bi-shield-lock"></i>
+                            <p>Permissões</p>
+                        </a>
+                    </li>
+                    @endif
+
                 </ul>
             </nav>
         </div>
@@ -121,8 +139,31 @@
         </section>
     </div>
 
-    <!-- AdminLTE Scripts -->
+        <!-- AdminLTE Scripts -->
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+
+        <!-- Tooltips Bootstrap + Ocultar mensagens -->
+        <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Ocultar alertas de sucesso após 2.5 segundos
+            const alerts = document.querySelectorAll('.alert-success.alert-dissmissible');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.style.transition = 'opacity 0.5s ease-out';
+                    alert.style.opacity = '0';
+                    setTimeout(() => alert.remove(), 500);
+                }, 2500);
+            });
+        });
+    </script>
+
+
 </div>
 </body>
 </html>

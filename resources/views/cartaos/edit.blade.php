@@ -29,14 +29,22 @@
                 <input type="text" name="puk" class="form-control" value="{{ $cartao->puk }}">
 
                 <label class="mt-2">Validade:</label>
-                <input type="date" name="validade" class="form-control" value="{{ $cartao->validade }}">
+                <input type="date" name="validade" class="form-control" value="{{ \Carbon\Carbon::parse($cartao->validade)->format('Y-m-d') }}">
 
                 <label class="mt-2">Status:</label>
                 <select name="status" class="form-control">
                     <option value="Ativo" {{ $cartao->status == 'Ativo' ? 'selected' : '' }}>Ativo</option>
                     <option value="Expirado" {{ $cartao->status == 'Expirado' ? 'selected' : '' }}>Expirado</option>
                     <option value="Bloqueado" {{ $cartao->status == 'Bloqueado' ? 'selected' : '' }}>Bloqueado</option>
+                    <option value="Devolvido" {{ $cartao->status == 'Devolvido' ? 'selected' : '' }}>Devolvido</option>
+                    @if($cartao->status == 'Perto de Vencer')
+                        <option value="Perto de Vencer" selected disabled>Perto de Vencer</option>
+                    @endif
                 </select>
+
+                <!-- 🔹 Campo de Observações -->
+                <label class="mt-2">Observação:</label>
+                <textarea name="observacao" class="form-control" rows="3">{{ $cartao->observacao }}</textarea>
 
                 <!-- Botões Atualizar e Cancelar no mesmo local -->
                 <div class="mt-4">

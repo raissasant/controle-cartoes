@@ -61,7 +61,7 @@
     width: 100%;
     background: #f8f9fa;
     border-top: 1px solid #ddd;">
-    &copy; {{ date('Y') }} Controle de Cartões - Agroaraçá Alimentos Ltda.
+    &copy; {{ date('Y') }} Agroaraçá Alimentos Ltda.
 </footer>
 
 <!-- Script para mostrar/ocultar senha -->

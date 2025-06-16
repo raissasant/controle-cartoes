@@ -17,5 +17,7 @@ class Cartao extends Model
         'puk',
         'validade',
         'status',
+        'observacao'
     ];
+    
 }

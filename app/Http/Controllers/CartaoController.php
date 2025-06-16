@@ -10,12 +10,48 @@ use App\Helpers\LogHelper; // Importa o LogHelper para registrar atividades
 
 class CartaoController extends Controller
 {
-    // Exibe a lista de cartões
-    public function index()
-    {
-        $cartaos = Cartao::all();
-        return view('cartaos.index', compact('cartaos'));
+    public function index(Request $request)
+{
+    $query = Cartao::query();
+
+    // 🔹 Se houver pesquisa, filtra os cartões pelos campos relevantes
+    if ($request->has('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('nome_granja', 'like', "%{$search}%")
+              ->orWhere('cidade', 'like', "%{$search}%")
+              ->orWhere('tecnico', 'like', "%{$search}%")
+              ->orWhere('status', 'like', "%{$search}%")
+              ->orWhere('observacao', 'like', "%{$search}%");
+        });
     }
+
+    // 🔹 Obtém todos os cartões sem paginação para atualizar os status no banco
+    $cartaos = $query->get();
+
+    foreach ($cartaos as $cartao) {
+        if ($cartao->status === 'Ativo' && $cartao->validade) {
+            $validade = Carbon::parse($cartao->validade);
+            $hoje = Carbon::now();
+            $diasParaVencer = $hoje->diffInDays($validade, false);
+
+            if ($diasParaVencer > 0 && $diasParaVencer <= 30) {
+                // Atualiza no banco para "Perto de Vencer"
+                $cartao->update(['status' => 'Perto de Vencer']);
+            } elseif ($validade->isPast()) {
+                // Atualiza no banco para "Expirado" se a data já passou
+                $cartao->update(['status' => 'Expirado']);
+            }
+        }
+    }
+
+    // 🔹 Obtém todos os cartões com paginação após atualização
+    $cartaos = $query->paginate(10);
+
+    return view('cartaos.index', compact('cartaos'));
+}
+
+    
 
     // Exibe o formulário de criação
     public function create()
@@ -31,6 +67,8 @@ class CartaoController extends Controller
             'cidade' => 'required',
             'tecnico' => 'required',
             'status' => 'required',
+            'validade' => 'nullable|date',
+            'observacao' => 'nullable|string',
         ]);
 
         $cartao = Cartao::create($request->all());
@@ -50,6 +88,12 @@ class CartaoController extends Controller
     // Processa a atualização de um cartão
     public function update(Request $request, Cartao $cartao)
     {
+        $request->validate([
+            'status' => 'required|in:Ativo,Expirado,Bloqueado,Devolvido',
+            'observacao' => 'nullable|string',
+            'validade' => 'nullable|date',
+        ]);
+
         $cartao->update($request->all());
 
         // 🔹 Registra o log da edição do cartão
