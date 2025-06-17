@@ -28,7 +28,7 @@
         <div class="mb-3">
             <label for="tipo" class="form-label">Tipo de Permissão:</label>
             <input type="text" name="tipo" id="tipo" class="form-control" value="{{ old('tipo', $permissao->tipo) }}" required>
-            <small class="form-text text-muted">Exemplos: <code>cartoes</code>, <code>oficios</code>, <code>dashboard</code></small>
+            <small class="form-text text-muted">Exemplos: <code>cartoes</code>, <code>oficios</code></small>
         </div>
 
         <button type="submit" class="btn btn-success">Atualizar</button>

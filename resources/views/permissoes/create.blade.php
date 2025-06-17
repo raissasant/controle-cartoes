@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Nova Permissão</h2>
+    <h2 class="text-center" >Nova Permissão</h2>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -19,7 +19,7 @@
         <div class="mb-3">
             <label>Tipo:</label>
             <input type="text" name="tipo" class="form-control" required>
-            <small>Exemplo: cartoes, oficios, dashboard</small>
+            <small>Exemplo: cartoes, oficios</small>
         </div>
         <button class="btn btn-success">Salvar</button>
         <a href="{{ route('permissoes.index') }}" class="btn btn-secondary">Voltar</a>
